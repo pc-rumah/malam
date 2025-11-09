@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use App\Models\User;
+use App\Filament\Resources\MatapelajaranResource\Pages;
+use App\Filament\Resources\MatapelajaranResource\RelationManagers;
+use App\Models\Matapelajaran;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class UserResource extends Resource
+class MatapelajaranResource extends Resource
 {
-    protected static ?string $model = User::class;
+    protected static ?string $model = Matapelajaran::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -23,18 +23,12 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('nama_mapel')
                     ->required(),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required(),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required(),
-                Forms\Components\Select::make('roles')
-                    ->relationship('roles', 'name')
-                    ->preload()
-                    ->searchable(),
+                Forms\Components\TextInput::make('kode_mapel'),
+                Forms\Components\Select::make('guru_id')
+                    ->required()
+                    ->relationship('guru', 'nama'),
             ]);
     }
 
@@ -42,19 +36,19 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('nama_mapel')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                Tables\Columns\TextColumn::make('kode_mapel')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('roles.name'),
-                Tables\Columns\ImageColumn::make('avatar_url')
-                    ->circular(),
+                Tables\Columns\TextColumn::make('guru.nama')
+                    ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -73,9 +67,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListMatapelajarans::route('/'),
+            'create' => Pages\CreateMatapelajaran::route('/create'),
+            'edit' => Pages\EditMatapelajaran::route('/{record}/edit'),
         ];
     }
 }

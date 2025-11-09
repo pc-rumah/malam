@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use App\Models\User;
+use App\Filament\Resources\JurusanResource\Pages;
+use App\Filament\Resources\JurusanResource\RelationManagers;
+use App\Models\Jurusan;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class UserResource extends Resource
+class JurusanResource extends Resource
 {
-    protected static ?string $model = User::class;
+    protected static ?string $model = Jurusan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -23,18 +23,10 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('nama_jurusan')
                     ->required(),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required(),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required(),
-                Forms\Components\Select::make('roles')
-                    ->relationship('roles', 'name')
-                    ->preload()
-                    ->searchable(),
+                Forms\Components\Textarea::make('keterangan')
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -42,19 +34,15 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('nama_jurusan')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('roles.name'),
-                Tables\Columns\ImageColumn::make('avatar_url')
-                    ->circular(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -73,9 +61,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListJurusans::route('/'),
+            'create' => Pages\CreateJurusan::route('/create'),
+            'edit' => Pages\EditJurusan::route('/{record}/edit'),
         ];
     }
 }
